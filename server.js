@@ -106,6 +106,33 @@ app.post('/recipes', jsonParser, (req, res) => {
   res.status(201).json(item);
 });
 
+app.put('/recipes/:id', jsonParser, (req, res) => {
+  const requiredFields = ['id', 'name', 'ingredients'];
+  
+  for (let i=0; i<requiredFields.length; i++ ) {
+    const field = requiredFields[i];
+    if ( !(field in req.body) ){
+      const message = `missing ${field} in request body`;
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  }
+
+  if (req.body.id !== req.params.id){
+    const message = 'Ids have to be the same bro!';
+    console.log(message);
+    return res.status(400).send(message);
+  }
+
+  const newItem = Recipes.update({
+    id: req.body.id,
+    name: req.body.name,
+    ingredients: req.body.ingredients
+  });
+
+  return res.status(200).json(newItem);
+});
+
 app.delete('/recipes/:id', (req, res) => {
   Recipes.delete(req.params.id);
   console.log(`Deleted recipe \`${req.params.ID}\``);
